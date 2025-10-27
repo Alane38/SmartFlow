@@ -22,6 +22,19 @@ cd backend && npm run test -- --testNamePattern="test name"  # Run specific test
 
 **Package Manager Note**: Backend README shows `pnpm` but package-lock.json indicates `npm` is used. Use `npm` for consistency.
 
+### Database (Prisma)
+```bash
+cd backend && npx prisma generate          # Generate Prisma client after schema changes
+cd backend && npx prisma migrate dev       # Create and apply migrations in development
+cd backend && npx prisma migrate dev --name <migration_name>  # Create named migration
+cd backend && npx prisma migrate deploy    # Apply migrations in production
+cd backend && npx prisma studio            # Open Prisma Studio (database GUI)
+cd backend && npx prisma db push           # Push schema changes without migrations (dev only)
+cd backend && npx prisma db seed           # Run database seed scripts
+```
+
+**Database Setup**: Configure `DATABASE_URL` in `backend/.env` before running migrations. Default is PostgreSQL, but MySQL and SQLite are also supported (see `.env` for examples).
+
 ### Frontend (Next.js)
 ```bash
 cd frontend && npm run dev         # Development server (port 3000)
@@ -30,33 +43,90 @@ cd frontend && npm run start       # Start production server
 cd frontend && npm run lint        # Lint code
 ```
 
+### API Documentation (Swagger)
+Once the backend is running, Swagger documentation is available at:
+- **URL**: `http://localhost:4000/api`
+- Interactive API testing and documentation via Swagger UI
+- All endpoints automatically documented with request/response schemas
+- **Note**: Backend runs on port 4000 (frontend uses 3000)
+
 ## Architecture
 
 ### Backend Architecture
 
 **Framework**: NestJS v11 with TypeScript (strict mode enabled)
 
-**Current State**: Early-stage MVP with minimal setup
-- Single endpoint: `GET /` returning "Hello World!"
-- No database or ORM configured yet
-- No authentication/authorization implemented
-- Ready for feature module expansion
+**Database**: Prisma ORM with PostgreSQL (configurable for MySQL/SQLite)
+
+**Current State**: Early-stage MVP with database schema and first API module
+- Swagger API documentation configured at `/api`
+- Parametres API module implemented (CRUD operations for configuration settings)
+- Prisma schema configured with complete data model (Clients, Devis, Factures, Paiements)
+- Global validation pipes and CORS enabled
+- No authentication/authorization implemented yet
+- Ready for additional feature module expansion
 
 **Structure**:
 ```
-backend/src/
-├── main.ts              # Application bootstrap (port 3000)
-├── app.module.ts        # Root module (empty imports)
-├── app.controller.ts    # HTTP request handlers
-├── app.service.ts       # Business logic layer
-└── app.controller.spec.ts  # Unit tests
+backend/
+├── src/
+│   ├── main.ts              # Application bootstrap (port 4000, Swagger setup)
+│   ├── app.module.ts        # Root module (imports PrismaModule, ParametresModule)
+│   ├── app.controller.ts    # HTTP request handlers
+│   ├── app.service.ts       # Business logic layer
+│   ├── prisma/
+│   │   ├── prisma.module.ts    # Global Prisma module
+│   │   └── prisma.service.ts   # Prisma client service
+│   └── parametres/
+│       ├── parametres.module.ts
+│       ├── parametres.controller.ts
+│       ├── parametres.service.ts
+│       └── dto/
+│           ├── create-parametres.dto.ts
+│           └── update-parametres.dto.ts
+├── prisma/
+│   └── schema.prisma        # Database schema with all models
+├── prisma.config.ts         # Prisma configuration with dotenv
+└── .env                     # Database connection string
 ```
+
+**Data Models** (defined in `prisma/schema.prisma`):
+- **Client**: Customer information with contact details and tax identifiers
+- **Devis**: Quotes with electronic signature support and pricing types (FORFAIT, TJM, FONCTIONNALITE, MIXTE)
+- **LigneDevis**: Quote line items
+- **Facture**: Invoices (both ACOMPTE and FINALE types) with payment tracking
+- **LigneFacture**: Invoice line items
+- **Paiement**: Payment records with multiple payment methods
+- **Parametres**: Application settings and company information
 
 **Key Patterns**:
 - Module pattern with `@Module()` decorator for feature organization
 - Dependency injection via constructor injection
 - Controller/Service separation for request handling and business logic
+- Prisma Client for type-safe database access
 - Test files use `*.spec.ts` naming convention
+
+**Prisma Usage**:
+- PrismaService is globally available via `@Global()` decorator
+- Inject in services: `constructor(private prisma: PrismaService) {}`
+- Type-safe database access: `this.prisma.parametres.findMany()`
+- Run `npx prisma generate` after schema changes to update types
+- See `src/prisma/prisma.service.ts` and `src/parametres/parametres.service.ts` for examples
+
+**API Documentation (Swagger)**:
+- Swagger UI available at `http://localhost:4000/api` when backend is running
+- All endpoints documented with `@Api*` decorators from `@nestjs/swagger`
+- DTOs use `class-validator` decorators for validation
+- Request validation enabled globally via `ValidationPipe` in `main.ts`
+- Example module: `src/parametres/` with full CRUD operations
+
+**Implemented API Endpoints**:
+- `POST /parametres` - Create new configuration settings
+- `GET /parametres` - Get all configuration settings
+- `GET /parametres/first` - Get the first configuration (main settings)
+- `GET /parametres/:id` - Get configuration by ID
+- `PATCH /parametres/:id` - Update configuration
+- `DELETE /parametres/:id` - Delete configuration
 
 **Testing**: Jest configured with ts-jest, rootDir set to `src/`, test regex `.*\.spec\.ts$`
 
@@ -120,6 +190,10 @@ frontend/
 - Constructor-based dependency injection pattern
 - Test files: `*.spec.ts` in same directory as source
 - ESLint configured to allow `any` type but warns on floating promises
+- **Swagger decorators**: Use `@ApiTags()`, `@ApiOperation()`, `@ApiResponse()`, `@ApiProperty()`, etc.
+- **Validation**: DTOs must use `class-validator` decorators (`@IsString()`, `@IsEmail()`, etc.)
+- **Swagger DTOs**: Use `@ApiProperty()` for required fields, `@ApiPropertyOptional()` for optional
+- **Partial DTOs**: Use `PartialType()` from `@nestjs/swagger` for update DTOs
 
 ### Frontend (Next.js)
 - React functional components with hooks
@@ -136,7 +210,11 @@ frontend/
 
 - **Monorepo Structure**: Backend and frontend are separate npm projects with independent dependencies
 - **No Backend Integration**: Frontend currently uses mock data; API integration pending
-- **Early Development**: Backend has no database, auth, or feature modules yet
+- **Database Schema**: Prisma schema fully defined but no migrations run yet - configure DATABASE_URL and run `npx prisma migrate dev` to set up database
+- **API Development**: Backend has Parametres API implemented as reference; ready to add more feature modules (clients, devis, factures)
+- **Swagger Documentation**: All API endpoints documented at `/api` - use as reference for frontend integration
 - **Tab-Based Navigation**: Frontend uses client-side tabs instead of traditional Next.js routing
 - **Component Library**: Uses Shadcn/ui (configured in `components.json`) - components can be added via shadcn CLI
 - **Testing**: Backend has Jest setup; frontend has no test configuration yet
+- **Environment Variables**: Backend requires `.env` file with DATABASE_URL (template provided in `.env`)
+- **Validation**: Global validation enabled - all DTOs are validated automatically using class-validator
