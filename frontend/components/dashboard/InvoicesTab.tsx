@@ -1,5 +1,17 @@
 'use client';
 
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Eye, Download, CreditCard, MoreHorizontal } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+
 interface Invoice {
   id: string;
   client: string;
@@ -15,130 +27,184 @@ interface InvoicesTabProps {
 }
 
 export default function InvoicesTab({ invoices }: InvoicesTabProps) {
-  return (
-    <div className="space-y-4 sm:space-y-6">
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-3 sm:space-y-0">
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Gestion des Factures</h2>
-        <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
-          <button className="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 order-2 sm:order-1">
-            Exporter
-          </button>
-          <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 order-1 sm:order-2">
-            Nouvelle Facture
-          </button>
-        </div>
-      </div>
-      
-      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
-          <p className="text-xs sm:text-sm text-gray-600">Total facturé</p>
-          <p className="text-lg sm:text-2xl font-bold text-gray-900 mt-1">€124,500</p>
-        </div>
-        <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
-          <p className="text-xs sm:text-sm text-gray-600">Payées</p>
-          <p className="text-lg sm:text-2xl font-bold text-green-600 mt-1">€115,600</p>
-        </div>
-        <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
-          <p className="text-xs sm:text-sm text-gray-600">En attente</p>
-          <p className="text-lg sm:text-2xl font-bold text-yellow-600 mt-1">€8,900</p>
-        </div>
-        <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200">
-          <p className="text-xs sm:text-sm text-gray-600">En retard</p>
-          <p className="text-lg sm:text-2xl font-bold text-red-600 mt-1">€8,900</p>
-        </div>
-      </div>
-      
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
-        <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-4">Liste des factures</h3>
-        
-        {/* Desktop Table */}
-        <div className="hidden sm:block overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Facture</th>
-                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Client</th>
-                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Projet</th>
-                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Montant</th>
-                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Émission</th>
-                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Échéance</th>
-                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
-                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {invoices.map((invoice) => (
-                <tr key={invoice.id} className="hover:bg-gray-50">
-                  <td className="px-4 sm:px-6 py-4 font-medium text-gray-900">{invoice.id}</td>
-                  <td className="px-4 sm:px-6 py-4 text-gray-900">{invoice.client}</td>
-                  <td className="px-4 sm:px-6 py-4 text-gray-600">{invoice.project}</td>
-                  <td className="px-4 sm:px-6 py-4 font-medium text-gray-900">€{invoice.amount.toLocaleString()}</td>
-                  <td className="px-4 sm:px-6 py-4 text-gray-600">{invoice.date}</td>
-                  <td className="px-4 sm:px-6 py-4 text-gray-600">{invoice.dueDate}</td>
-                  <td className="px-4 sm:px-6 py-4">
-                    <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
-                      invoice.status === 'payée' 
-                        ? 'bg-green-100 text-green-800'
-                        : invoice.status === 'en retard'
-                        ? 'bg-red-100 text-red-800'
-                        : 'bg-yellow-100 text-yellow-800'
-                    }`}>
-                      {invoice.status}
-                    </span>
-                  </td>
-                  <td className="px-4 sm:px-6 py-4">
-                    <div className="flex space-x-2">
-                      <button className="text-blue-600 hover:text-blue-900">Voir</button>
-                      <button className="text-gray-600 hover:text-gray-900">PDF</button>
-                      {invoice.status !== 'payée' && (
-                        <button className="text-green-600 hover:text-green-900">Paiement</button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+  const getStatusVariant = (status: string) => {
+    switch (status) {
+      case 'payée':
+        return 'default';
+      case 'en retard':
+        return 'destructive';
+      case 'en attente':
+        return 'secondary';
+      default:
+        return 'outline';
+    }
+  };
 
-        {/* Mobile Card View */}
-        <div className="sm:hidden divide-y divide-gray-200">
-          {invoices.map((invoice) => (
-            <div key={invoice.id} className="p-4 hover:bg-gray-50">
-              <div className="flex justify-between items-start mb-2">
-                <div>
-                  <p className="font-medium text-gray-900">{invoice.id}</p>
-                  <p className="text-sm text-gray-500">{invoice.date}</p>
-                </div>
-                <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
-                  invoice.status === 'payée' 
-                    ? 'bg-green-100 text-green-800'
-                    : invoice.status === 'en retard'
-                    ? 'bg-red-100 text-red-800'
-                    : 'bg-yellow-100 text-yellow-800'
-                }`}>
-                  {invoice.status}
-                </span>
-              </div>
-              <div className="mb-2">
-                <p className="font-medium text-gray-900">{invoice.client}</p>
-                <p className="text-sm text-gray-500">{invoice.project}</p>
-              </div>
-              <div className="flex justify-between items-center mb-2">
-                <p className="font-medium text-gray-900">€{invoice.amount.toLocaleString()}</p>
-                <p className="text-sm text-gray-500">Échéance {invoice.dueDate}</p>
-              </div>
-              <div className="flex space-x-3">
-                <button className="text-blue-600 hover:text-blue-900 text-sm">Voir</button>
-                <button className="text-gray-600 hover:text-gray-900 text-sm">PDF</button>
-                {invoice.status !== 'payée' && (
-                  <button className="text-green-600 hover:text-green-900 text-sm">Paiement</button>
-                )}
-              </div>
-            </div>
-          ))}
+  const stats = {
+    total: invoices.reduce((sum, inv) => sum + inv.amount, 0),
+    paid: invoices.filter(inv => inv.status === 'payée').reduce((sum, inv) => sum + inv.amount, 0),
+    pending: invoices.filter(inv => inv.status === 'en attente').reduce((sum, inv) => sum + inv.amount, 0),
+    overdue: invoices.filter(inv => inv.status === 'en retard').reduce((sum, inv) => sum + inv.amount, 0),
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h2 className="text-2xl font-bold">Gestion des Factures</h2>
+          <p className="text-muted-foreground">Suivez vos factures et paiements</p>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline">
+            Exporter
+          </Button>
+          <Button>
+            <CreditCard className="h-4 w-4 mr-2" />
+            Nouvelle Facture
+          </Button>
         </div>
       </div>
+      
+      {/* Stats Cards */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total facturé</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">€{stats.total.toLocaleString()}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Payées</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-600">€{stats.paid.toLocaleString()}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">En attente</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-yellow-600">€{stats.pending.toLocaleString()}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">En retard</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-red-600">€{stats.overdue.toLocaleString()}</div>
+          </CardContent>
+        </Card>
+      </div>
+      
+      {/* Invoices Table */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Liste des factures</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="hidden md:block">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Facture</TableHead>
+                  <TableHead>Client</TableHead>
+                  <TableHead>Projet</TableHead>
+                  <TableHead>Montant</TableHead>
+                  <TableHead>Émission</TableHead>
+                  <TableHead>Échéance</TableHead>
+                  <TableHead>Statut</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {invoices.map((invoice) => (
+                  <TableRow key={invoice.id}>
+                    <TableCell className="font-medium">{invoice.id}</TableCell>
+                    <TableCell>{invoice.client}</TableCell>
+                    <TableCell className="text-muted-foreground">{invoice.project}</TableCell>
+                    <TableCell className="font-medium">€{invoice.amount.toLocaleString()}</TableCell>
+                    <TableCell>{invoice.date}</TableCell>
+                    <TableCell>{invoice.dueDate}</TableCell>
+                    <TableCell>
+                      <Badge variant={getStatusVariant(invoice.status)}>
+                        {invoice.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem>
+                            <Eye className="mr-2 h-4 w-4" />
+                            Voir
+                          </DropdownMenuItem>
+                          <DropdownMenuItem>
+                            <Download className="mr-2 h-4 w-4" />
+                            Télécharger PDF
+                          </DropdownMenuItem>
+                          {invoice.status !== 'payée' && (
+                            <DropdownMenuItem>
+                              <CreditCard className="mr-2 h-4 w-4" />
+                              Enregistrer paiement
+                            </DropdownMenuItem>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="md:hidden space-y-4">
+            {invoices.map((invoice) => (
+              <div key={invoice.id} className="border rounded-lg p-4">
+                <div className="flex justify-between items-start mb-3">
+                  <div>
+                    <p className="font-medium">{invoice.id}</p>
+                    <p className="text-sm text-muted-foreground">{invoice.date}</p>
+                  </div>
+                  <Badge variant={getStatusVariant(invoice.status)}>
+                    {invoice.status}
+                  </Badge>
+                </div>
+                <div className="mb-3">
+                  <p className="font-medium">{invoice.client}</p>
+                  <p className="text-sm text-muted-foreground">{invoice.project}</p>
+                </div>
+                <div className="flex justify-between items-center mb-3">
+                  <p className="font-medium text-lg">€{invoice.amount.toLocaleString()}</p>
+                  <p className="text-sm text-muted-foreground">Échéance {invoice.dueDate}</p>
+                </div>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm">
+                    <Eye className="h-4 w-4" />
+                  </Button>
+                  <Button variant="outline" size="sm">
+                    <Download className="h-4 w-4" />
+                  </Button>
+                  {invoice.status !== 'payée' && (
+                    <Button variant="outline" size="sm">
+                      <CreditCard className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

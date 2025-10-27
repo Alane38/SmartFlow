@@ -1,5 +1,17 @@
 'use client';
 
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Eye, Download, MoreHorizontal } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+
 interface Invoice {
   id: string;
   client: string;
@@ -14,97 +26,119 @@ interface RecentInvoicesProps {
 }
 
 export default function RecentInvoices({ invoices }: RecentInvoicesProps) {
-  return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-      <div className="px-4 sm:px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-        <h3 className="text-base sm:text-lg font-semibold text-gray-900">Factures récentes</h3>
-        <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">Voir tout</button>
-      </div>
-      
-      {/* Desktop Table */}
-      <div className="hidden sm:block overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Facture</th>
-              <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
-              <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Montant</th>
-              <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-              <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {invoices.map((invoice) => (
-              <tr key={invoice.id} className="hover:bg-gray-50">
-                <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">{invoice.id}</p>
-                    <p className="text-xs text-gray-500">{invoice.date}</p>
-                  </div>
-                </td>
-                <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">{invoice.client}</p>
-                    <p className="text-xs text-gray-500">{invoice.project}</p>
-                  </div>
-                </td>
-                <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                  €{invoice.amount.toLocaleString()}
-                </td>
-                <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
-                  <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
-                    invoice.status === 'payée' 
-                      ? 'bg-green-100 text-green-800'
-                      : invoice.status === 'en retard'
-                      ? 'bg-red-100 text-red-800'
-                      : 'bg-yellow-100 text-yellow-800'
-                  }`}>
-                    {invoice.status}
-                  </span>
-                </td>
-                <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm">
-                  <button className="text-blue-600 hover:text-blue-900 mr-3">Voir</button>
-                  <button className="text-gray-600 hover:text-gray-900">PDF</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+  const getStatusVariant = (status: string) => {
+    switch (status) {
+      case 'payée':
+        return 'default';
+      case 'en retard':
+        return 'destructive';
+      case 'en attente':
+        return 'secondary';
+      default:
+        return 'outline';
+    }
+  };
 
-      {/* Mobile Card View */}
-      <div className="sm:hidden divide-y divide-gray-200">
-        {invoices.map((invoice) => (
-          <div key={invoice.id} className="p-4 hover:bg-gray-50">
-            <div className="flex justify-between items-start mb-2">
-              <div>
-                <p className="font-medium text-gray-900">{invoice.id}</p>
-                <p className="text-sm text-gray-500">{invoice.date}</p>
+  return (
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+        <CardTitle className="text-lg font-semibold">Factures récentes</CardTitle>
+        <Button variant="outline" size="sm">
+          Voir tout
+        </Button>
+      </CardHeader>
+      <CardContent>
+        <div className="hidden md:block">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Facture</TableHead>
+                <TableHead>Client</TableHead>
+                <TableHead>Montant</TableHead>
+                <TableHead>Statut</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {invoices.map((invoice) => (
+                <TableRow key={invoice.id}>
+                  <TableCell>
+                    <div>
+                      <p className="font-medium">{invoice.id}</p>
+                      <p className="text-sm text-muted-foreground">{invoice.date}</p>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div>
+                      <p className="font-medium">{invoice.client}</p>
+                      <p className="text-sm text-muted-foreground">{invoice.project}</p>
+                    </div>
+                  </TableCell>
+                  <TableCell className="font-medium">
+                    €{invoice.amount.toLocaleString()}
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={getStatusVariant(invoice.status)}>
+                      {invoice.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem>
+                          <Eye className="mr-2 h-4 w-4" />
+                          Voir
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          <Download className="mr-2 h-4 w-4" />
+                          Télécharger PDF
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+
+        {/* Mobile Card View */}
+        <div className="md:hidden space-y-4">
+          {invoices.map((invoice) => (
+            <div key={invoice.id} className="border rounded-lg p-4">
+              <div className="flex justify-between items-start mb-3">
+                <div>
+                  <p className="font-medium">{invoice.id}</p>
+                  <p className="text-sm text-muted-foreground">{invoice.date}</p>
+                </div>
+                <Badge variant={getStatusVariant(invoice.status)}>
+                  {invoice.status}
+                </Badge>
               </div>
-              <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
-                invoice.status === 'payée' 
-                  ? 'bg-green-100 text-green-800'
-                  : invoice.status === 'en retard'
-                  ? 'bg-red-100 text-red-800'
-                  : 'bg-yellow-100 text-yellow-800'
-              }`}>
-                {invoice.status}
-              </span>
-            </div>
-            <div className="mb-2">
-              <p className="font-medium text-gray-900">{invoice.client}</p>
-              <p className="text-sm text-gray-500">{invoice.project}</p>
-            </div>
-            <div className="flex justify-between items-center">
-              <p className="font-medium text-gray-900">€{invoice.amount.toLocaleString()}</p>
-              <div className="flex space-x-3">
-                <button className="text-blue-600 hover:text-blue-900 text-sm">Voir</button>
-                <button className="text-gray-600 hover:text-gray-900 text-sm">PDF</button>
+              <div className="mb-3">
+                <p className="font-medium">{invoice.client}</p>
+                <p className="text-sm text-muted-foreground">{invoice.project}</p>
+              </div>
+              <div className="flex justify-between items-center">
+                <p className="font-medium text-lg">€{invoice.amount.toLocaleString()}</p>
+                <div className="flex space-x-2">
+                  <Button variant="outline" size="sm">
+                    <Eye className="h-4 w-4" />
+                  </Button>
+                  <Button variant="outline" size="sm">
+                    <Download className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
-    </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   );
 }

@@ -1,5 +1,16 @@
 'use client';
 
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { 
+  TrendingUp, 
+  TrendingDown, 
+  DollarSign, 
+  AlertCircle, 
+  Users, 
+  BarChart3 
+} from 'lucide-react';
+
 interface StatsCardsProps {
   stats: {
     revenue: number;
@@ -11,58 +22,74 @@ interface StatsCardsProps {
 
 export default function StatsCards({ stats }: StatsCardsProps) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-      <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-        <div className="flex items-center justify-between mb-4">
-          <div className="bg-green-100 p-2 sm:p-3 rounded-lg">
-            <svg className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-            </svg>
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">
+            Chiffre d'affaires
+          </CardTitle>
+          <DollarSign className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">€{stats.revenue.toLocaleString()}</div>
+          <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+            <TrendingUp className="h-3 w-3 text-green-500" />
+            <span className="text-green-500">+12.5%</span>
+            <span>vs mois dernier</span>
           </div>
-          <span className="text-xs sm:text-sm text-green-600 font-medium hidden sm:block">+12.5%</span>
-        </div>
-        <h3 className="text-xl sm:text-2xl font-bold text-gray-900">€{stats.revenue.toLocaleString()}</h3>
-        <p className="text-xs sm:text-sm text-gray-600 mt-1">Chiffre d'affaires</p>
-      </div>
+        </CardContent>
+      </Card>
 
-      <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-        <div className="flex items-center justify-between mb-4">
-          <div className="bg-red-100 p-2 sm:p-3 rounded-lg">
-            <svg className="w-5 h-5 sm:w-6 sm:h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">
+            Impayés en retard
+          </CardTitle>
+          <AlertCircle className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold text-red-600">€{stats.unpaid.toLocaleString()}</div>
+          <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+            <Badge variant="destructive" className="text-xs">
+              3 factures
+            </Badge>
           </div>
-          <span className="text-xs sm:text-sm text-red-600 font-medium hidden sm:block">3 factures</span>
-        </div>
-        <h3 className="text-xl sm:text-2xl font-bold text-red-600">€{stats.unpaid.toLocaleString()}</h3>
-        <p className="text-xs sm:text-sm text-gray-600 mt-1">Impayés en retard</p>
-      </div>
+        </CardContent>
+      </Card>
 
-      <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-        <div className="flex items-center justify-between mb-4">
-          <div className="bg-blue-100 p-2 sm:p-3 rounded-lg">
-            <svg className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-            </svg>
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">
+            Clients actifs
+          </CardTitle>
+          <Users className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">{stats.clients}</div>
+          <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+            <TrendingUp className="h-3 w-3 text-green-500" />
+            <span className="text-green-500">+4</span>
+            <span>ce mois</span>
           </div>
-          <span className="text-xs sm:text-sm text-blue-600 font-medium hidden sm:block">+4 ce mois</span>
-        </div>
-        <h3 className="text-xl sm:text-2xl font-bold text-gray-900">{stats.clients}</h3>
-        <p className="text-xs sm:text-sm text-gray-600 mt-1">Clients actifs</p>
-      </div>
+        </CardContent>
+      </Card>
 
-      <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-        <div className="flex items-center justify-between mb-4">
-          <div className="bg-purple-100 p-2 sm:p-3 rounded-lg">
-            <svg className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-            </svg>
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">
+            Marge bénéficiaire
+          </CardTitle>
+          <BarChart3 className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">{stats.profitMargin}%</div>
+          <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+            <Badge variant="secondary" className="text-xs">
+              Excellent
+            </Badge>
           </div>
-          <span className="text-xs sm:text-sm text-purple-600 font-medium hidden sm:block">Excellent</span>
-        </div>
-        <h3 className="text-xl sm:text-2xl font-bold text-gray-900">{stats.profitMargin}%</h3>
-        <p className="text-xs sm:text-sm text-gray-600 mt-1">Marge bénéficiaire</p>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

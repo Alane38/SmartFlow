@@ -1,19 +1,41 @@
 'use client';
 
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Construction, Mail } from 'lucide-react';
+
 interface ComingSoonTabProps {
   title: string;
 }
 
 export default function ComingSoonTab({ title }: ComingSoonTabProps) {
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
-      <div className="text-gray-400 mb-4">
-        <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-        </svg>
-      </div>
-      <h3 className="text-lg font-medium text-gray-900 mb-2">Section en développement</h3>
-      <p className="text-gray-500">La section {title} sera bientôt disponible.</p>
+    <div className="flex items-center justify-center min-h-[400px]">
+      <Card className="w-full max-w-md text-center">
+        <CardHeader>
+          <div className="mx-auto mb-4">
+            <Construction className="h-12 w-12 text-muted-foreground" />
+          </div>
+          <CardTitle className="text-xl">Section en développement</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-muted-foreground">
+            La section <span className="font-semibold">{title}</span> sera bientôt disponible.
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Nous travaillons actuellement pour vous offrir la meilleure expérience possible.
+          </p>
+          <div className="flex flex-col gap-2 pt-4">
+            <Button variant="outline">
+              <Mail className="h-4 w-4 mr-2" />
+              Être notifié
+            </Button>
+            <p className="text-xs text-muted-foreground">
+              Recevez une notification dès que cette section sera disponible.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -65,21 +65,26 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      <Sidebar
-        isOpen={sidebarOpen}
-        onToggle={() => setSidebarOpen(!sidebarOpen)}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-      />
+    <div className="flex min-h-screen bg-background">
+      {/* Desktop sidebar */}
+      <div className="hidden md:flex">
+        <Sidebar
+          isOpen={sidebarOpen}
+          onToggle={() => setSidebarOpen(!sidebarOpen)}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          isMobile={isMobile}
+        />
+      </div>
 
-      <div className="flex-1 overflow-auto">
+      {/* Main content */}
+      <div className="flex-1 flex flex-col">
         <Header 
           activeTabLabel={activeTabLabel} 
           onMenuToggle={() => setSidebarOpen(!sidebarOpen)}
         />
         
-        <main className="p-3 sm:p-4 lg:p-6">
+        <main className="flex-1 container mx-auto px-4 py-6">
           {renderContent()}
         </main>
       </div>

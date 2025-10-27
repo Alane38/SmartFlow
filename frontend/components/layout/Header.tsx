@@ -1,52 +1,134 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Bell, Menu, Settings, LogOut, User, Sun, Moon, Monitor } from 'lucide-react';
+import { useTheme } from '@/hooks/use-theme';
+
 interface HeaderProps {
   activeTabLabel: string;
   onMenuToggle?: () => void;
 }
 
 export default function Header({ activeTabLabel, onMenuToggle }: HeaderProps) {
+  const { theme, toggleTheme, mounted } = useTheme();
+
+  const getThemeIcon = () => {
+    if (!mounted) return <Monitor className="h-4 w-4" />;
+    
+    switch (theme) {
+      case 'light':
+        return <Sun className="h-4 w-4" />;
+      case 'dark':
+        return <Moon className="h-4 w-4" />;
+      default:
+        return <Monitor className="h-4 w-4" />;
+    }
+  };
+
+  const getThemeLabel = () => {
+    if (!mounted) return 'Système';
+    
+    switch (theme) {
+      case 'light':
+        return 'Clair';
+      case 'dark':
+        return 'Sombre';
+      default:
+        return 'Système';
+    }
+  };
+
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-30">
-      <div className="px-4 sm:px-6 py-4 flex justify-between items-center">
-        <div className="flex items-center space-x-4">
+    <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-16 items-center space-x-4 sm:justify-between sm:space-x-0">
+        <div className="flex gap-6 md:gap-10">
           {/* Mobile menu button */}
-          <button
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
             onClick={onMenuToggle}
-            className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
           >
-            <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
+            <Menu className="h-5 w-5" />
+            <span className="sr-only">Toggle Menu</span>
+          </Button>
           
-          <div>
-            <h2 className="text-lg sm:text-2xl font-bold text-gray-900 truncate max-w-[200px] sm:max-w-none">
-              {activeTabLabel}
-            </h2>
-            <p className="text-xs sm:text-sm text-gray-600 mt-1 hidden sm:block">
-              {new Date().toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-            </p>
+          <div className="hidden md:flex pl-4">
+            <div>
+              <h2 className="text-lg font-semibold">{activeTabLabel}</h2>
+              <p className="text-sm text-muted-foreground">
+                {new Date().toLocaleDateString('fr-FR', { 
+                  weekday: 'long', 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric' 
+                })}
+              </p>
+            </div>
           </div>
         </div>
         
-        <div className="flex items-center space-x-2 sm:space-x-4">
-          <button className="p-2 rounded-lg hover:bg-gray-100 relative">
-            <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-            </svg>
-            <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-          </button>
+        <div className="flex flex-1 items-center justify-end space-x-4">
+          {/* Theme toggle */}
+          <Button variant="ghost" size="icon" onClick={toggleTheme} title={`Thème: ${getThemeLabel()}`}>
+            {getThemeIcon()}
+            <span className="sr-only">Toggle theme</span>
+          </Button>
           
-          <div className="flex items-center space-x-2 sm:space-x-3">
-            <div className="text-right hidden sm:block">
-              <p className="text-sm font-medium text-gray-900">Jean Dupont</p>
-              <p className="text-xs text-gray-600">Freelance</p>
-            </div>
-            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-medium text-sm sm:text-base">
-              JD
-            </div>
-          </div>
+          {/* Notifications */}
+          <Button variant="ghost" size="icon" className="relative">
+            <Bell className="h-4 w-4" />
+            <span className="absolute -top-1 -right-1 flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+            </span>
+          </Button>
+          
+          {/* User menu */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src="/avatars/01.png" alt="@user" />
+                  <AvatarFallback>JD</AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56" align="end" forceMount>
+              <DropdownMenuLabel className="font-normal">
+                <div className="flex flex-col space-y-1">
+                  <p className="text-sm font-medium leading-none">Jean Dupont</p>
+                  <p className="text-xs leading-none text-muted-foreground">
+                    jean.dupont@example.com
+                  </p>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                <User className="mr-2 h-4 w-4" />
+                <span>Profil</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Settings className="mr-2 h-4 w-4" />
+                <span>Paramètres</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Déconnexion</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </header>

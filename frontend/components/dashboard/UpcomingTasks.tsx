@@ -1,5 +1,11 @@
 'use client';
 
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Calendar, Clock } from 'lucide-react';
+
 interface Task {
   id: number;
   title: string;
@@ -13,33 +19,58 @@ interface UpcomingTasksProps {
 }
 
 export default function UpcomingTasks({ tasks }: UpcomingTasksProps) {
+  const getPriorityVariant = (priority: string) => {
+    switch (priority) {
+      case 'high':
+        return 'destructive';
+      case 'medium':
+        return 'secondary';
+      default:
+        return 'outline';
+    }
+  };
+
+  const getPriorityLabel = (priority: string) => {
+    switch (priority) {
+      case 'high':
+        return 'Urgent';
+      case 'medium':
+        return 'Normal';
+      default:
+        return 'Bas';
+    }
+  };
+
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-      <div className="px-4 sm:px-6 py-4 border-b border-gray-200">
-        <h3 className="text-base sm:text-lg font-semibold text-gray-900">Tâches à venir</h3>
-      </div>
-      <div className="divide-y divide-gray-200">
-        {tasks.map((task) => (
-          <div key={task.id} className="px-4 sm:px-6 py-3 sm:py-4 hover:bg-gray-50">
-            <div className="flex items-start justify-between">
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+        <CardTitle className="text-lg font-semibold">Tâches à venir</CardTitle>
+        <Button variant="outline" size="sm">
+          <Calendar className="h-4 w-4 mr-2" />
+          Ajouter
+        </Button>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          {tasks.map((task) => (
+            <div key={task.id} className="flex items-start space-x-3 p-3 rounded-lg border hover:bg-muted/50 transition-colors">
+              <Checkbox className="mt-1" />
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate pr-2">{task.title}</p>
-                <div className="flex flex-col sm:flex-row sm:items-center mt-1 sm:space-x-2 space-y-1 sm:space-y-0">
-                  <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${
-                    task.priority === 'high' 
-                      ? 'bg-red-100 text-red-800'
-                      : 'bg-yellow-100 text-yellow-800'
-                  }`}>
-                    {task.priority === 'high' ? 'Urgent' : 'Normal'}
-                  </span>
-                  <span className="text-xs text-gray-500">{task.dueDate}</span>
+                <p className="font-medium leading-none mb-2">{task.title}</p>
+                <div className="flex items-center space-x-2">
+                  <Badge variant={getPriorityVariant(task.priority)} className="text-xs">
+                    {getPriorityLabel(task.priority)}
+                  </Badge>
+                  <div className="flex items-center text-xs text-muted-foreground">
+                    <Clock className="h-3 w-3 mr-1" />
+                    {task.dueDate}
+                  </div>
                 </div>
               </div>
-              <input type="checkbox" className="mt-1 rounded border-gray-300 flex-shrink-0" />
             </div>
-          </div>
-        ))}
-      </div>
-    </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   );
 }

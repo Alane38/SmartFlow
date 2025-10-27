@@ -1,94 +1,163 @@
 'use client';
 
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
+import { Badge } from '@/components/ui/badge';
+import { 
+  LayoutDashboard, 
+  FileText, 
+  Receipt, 
+  DollarSign, 
+  Users, 
+  FolderOpen, 
+  CreditCard, 
+  TrendingUp, 
+  FileBarChart, 
+  Settings,
+  Menu,
+  X,
+  ChevronLeft,
+  ChevronRight
+} from 'lucide-react';
+
 interface SidebarProps {
   isOpen: boolean;
   onToggle: () => void;
   activeTab: string;
   onTabChange: (tab: string) => void;
+  isMobile: boolean;
 }
 
 const menuItems = [
-  { id: 'overview', label: 'Tableau de bord', icon: '📊' },
-  { id: 'quotes', label: 'Devis', icon: '📋' },
-  { id: 'invoices', label: 'Factures', icon: '🧾' },
-  { id: 'deposits', label: 'Acomptes', icon: '💰' },
-  { id: 'clients', label: 'Clients', icon: '👥' },
-  { id: 'projects', label: 'Projets', icon: '📁' },
-  { id: 'payments', label: 'Paiements', icon: '💳' },
-  { id: 'expenses', label: 'Dépenses', icon: '💸' },
-  { id: 'reports', label: 'Rapports', icon: '📈' },
-  { id: 'settings', label: 'Paramètres', icon: '⚙️' },
+  { id: 'overview', label: 'Tableau de bord', icon: LayoutDashboard },
+  { id: 'quotes', label: 'Devis', icon: FileText },
+  { id: 'invoices', label: 'Factures', icon: Receipt },
+  { id: 'deposits', label: 'Acomptes', icon: DollarSign },
+  { id: 'clients', label: 'Clients', icon: Users },
+  { id: 'projects', label: 'Projets', icon: FolderOpen },
+  { id: 'payments', label: 'Paiements', icon: CreditCard },
+  { id: 'expenses', label: 'Dépenses', icon: TrendingUp },
+  { id: 'reports', label: 'Rapports', icon: FileBarChart },
+  { id: 'settings', label: 'Paramètres', icon: Settings },
 ];
 
-export default function Sidebar({ isOpen, onToggle, activeTab, onTabChange }: SidebarProps) {
+function SidebarContent({ activeTab, onTabChange, isMobile, onMobileClose, isCollapsed }: {
+  activeTab: string;
+  onTabChange: (tab: string) => void;
+  isMobile: boolean;
+  onMobileClose?: () => void;
+  isCollapsed?: boolean;
+}) {
+  const handleItemClick = (itemId: string) => {
+    onTabChange(itemId);
+    if (isMobile && onMobileClose) {
+      onMobileClose();
+    }
+  };
+
   return (
-    <>
-      {/* Mobile overlay */}
-      {isOpen && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-          onClick={onToggle}
-        />
-      )}
-      
-      {/* Sidebar */}
-      <div className={`
-        ${isOpen ? 'w-64' : 'w-20'} 
-        bg-white shadow-lg transition-all duration-300 ease-in-out
-        fixed lg:relative h-full z-50
-        ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-      `}>
-        <div className="flex items-center justify-between p-4 border-b">
-          <h1 className={`font-bold text-xl text-gray-900 ${!isOpen && 'hidden'} ${isOpen ? 'block' : 'hidden lg:block'}`}>
-            SmartFlow
-          </h1>
-          <button
-            onClick={onToggle}
-            className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-          >
-            <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-        </div>
-        
-        <nav className="p-4 overflow-y-auto max-h-[calc(100vh-80px)]">
-          <ul className="space-y-2">
-            {menuItems.map((item) => (
-              <li key={item.id}>
-                <button
-                  onClick={() => {
-                    onTabChange(item.id);
-                    // Close sidebar on mobile after selection
-                    if (window.innerWidth < 1024) {
-                      onToggle();
-                    }
-                  }}
-                  className={`w-full flex items-center px-3 py-3 rounded-lg transition-colors ${
-                    activeTab === item.id
-                      ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-700'
-                      : 'text-gray-700 hover:bg-gray-50'
-                  }`}
-                >
-                  <span className="text-xl mr-3 flex-shrink-0">{item.icon}</span>
-                  {isOpen && (
-                    <span className="font-medium text-sm lg:text-base">{item.label}</span>
-                  )}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </nav>
-        
-        {isOpen && (
-          <div className="absolute bottom-0 left-0 right-0 p-4 border-t hidden lg:block">
-            <div className="bg-gray-50 rounded-lg p-3">
-              <p className="text-sm font-medium text-gray-900">Version Pro</p>
-              <p className="text-xs text-gray-600 mt-1">Accès complet à toutes les fonctionnalités</p>
-            </div>
-          </div>
-        )}
+    <div className="flex h-full flex-col">
+      {/* Header */}
+      <div className="flex h-16 items-center justify-between border-b px-6">
+        <h1 className={`text-xl font-bold ${isCollapsed ? 'hidden' : 'block'}`}>SmartFlow</h1>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onMobileClose}
+          className="hidden md:flex"
+        >
+          {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+        </Button>
       </div>
-    </>
+      
+      {/* Navigation */}
+      <ScrollArea className="flex-1 px-4 py-4">
+        <nav className="space-y-2">
+          {menuItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <Button
+                key={item.id}
+                variant={activeTab === item.id ? "secondary" : "ghost"}
+                className="w-full justify-start"
+                onClick={() => handleItemClick(item.id)}
+              >
+                <Icon className={`${isCollapsed ? '' : 'mr-3'} h-4 w-4`} />
+                {!isCollapsed && item.label}
+                {!isCollapsed && item.id === 'quotes' && (
+                  <Badge variant="secondary" className="ml-auto">
+                    3
+                  </Badge>
+                )}
+                {!isCollapsed && item.id === 'invoices' && (
+                  <Badge variant="secondary" className="ml-auto">
+                    7
+                  </Badge>
+                )}
+              </Button>
+            );
+          })}
+        </nav>
+      </ScrollArea>
+      
+      {/* Footer */}
+      <div className="border-t p-4">
+        <div className={`rounded-lg bg-muted p-3 ${isCollapsed ? 'p-2' : ''}`}>
+          <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
+            {!isCollapsed && (
+              <div>
+                <p className="text-sm font-medium">Version Pro</p>
+                <p className="text-xs text-muted-foreground">
+                  Accès complet
+                </p>
+              </div>
+            )}
+            <Badge variant="outline" className={isCollapsed ? 'text-xs' : ''}>
+              {isCollapsed ? 'P' : 'PRO'}
+            </Badge>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function Sidebar({ isOpen, onToggle, activeTab, onTabChange, isMobile }: SidebarProps) {
+  if (isMobile) {
+    return (
+      <Sheet open={isOpen} onOpenChange={onToggle}>
+        <SheetTrigger asChild>
+          <Button variant="outline" size="icon" className="md:hidden">
+            <Menu className="h-4 w-4" />
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="left" className="p-0 w-64">
+          <SidebarContent
+            activeTab={activeTab}
+            onTabChange={onTabChange}
+            isMobile={isMobile}
+            onMobileClose={onToggle}
+          />
+        </SheetContent>
+      </Sheet>
+    );
+  }
+
+  return (
+    <div className={`
+      hidden md:flex h-screen ${isOpen ? 'w-64' : 'w-16'} flex-col border-r bg-background
+      transition-all duration-300
+    `}>
+      <SidebarContent
+        activeTab={activeTab}
+        onTabChange={onTabChange}
+        isMobile={isMobile}
+        isCollapsed={!isOpen}
+        onMobileClose={onToggle}
+      />
+    </div>
   );
 }
