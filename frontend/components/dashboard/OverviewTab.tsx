@@ -42,12 +42,14 @@ interface OverviewTabProps {
 
 export default function OverviewTab({ stats, recentInvoices, upcomingTasks, projects }: OverviewTabProps) {
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <StatsCards stats={stats} />
       <QuickActions />
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <RecentInvoices invoices={recentInvoices} />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+        <div className="lg:col-span-2">
+          <RecentInvoices invoices={recentInvoices} />
+        </div>
         <UpcomingTasks tasks={upcomingTasks} />
       </div>
 

@@ -15,16 +15,16 @@ interface UpcomingTasksProps {
 export default function UpcomingTasks({ tasks }: UpcomingTasksProps) {
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-      <div className="px-6 py-4 border-b border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-900">Tâches à venir</h3>
+      <div className="px-4 sm:px-6 py-4 border-b border-gray-200">
+        <h3 className="text-base sm:text-lg font-semibold text-gray-900">Tâches à venir</h3>
       </div>
       <div className="divide-y divide-gray-200">
         {tasks.map((task) => (
-          <div key={task.id} className="px-6 py-4 hover:bg-gray-50">
+          <div key={task.id} className="px-4 sm:px-6 py-3 sm:py-4 hover:bg-gray-50">
             <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900">{task.title}</p>
-                <div className="flex items-center mt-1 space-x-2">
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-900 truncate pr-2">{task.title}</p>
+                <div className="flex flex-col sm:flex-row sm:items-center mt-1 sm:space-x-2 space-y-1 sm:space-y-0">
                   <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${
                     task.priority === 'high' 
                       ? 'bg-red-100 text-red-800'
@@ -35,7 +35,7 @@ export default function UpcomingTasks({ tasks }: UpcomingTasksProps) {
                   <span className="text-xs text-gray-500">{task.dueDate}</span>
                 </div>
               </div>
-              <input type="checkbox" className="mt-1 rounded border-gray-300" />
+              <input type="checkbox" className="mt-1 rounded border-gray-300 flex-shrink-0" />
             </div>
           </div>
         ))}

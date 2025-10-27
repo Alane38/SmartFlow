@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
 import OverviewTab from '@/components/dashboard/OverviewTab';
@@ -11,7 +11,24 @@ import { stats, recentInvoices, recentQuotes, projects, upcomingTasks, menuItems
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('overview');
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile screen size
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024);
+      if (window.innerWidth >= 1024) {
+        setSidebarOpen(true);
+      } else {
+        setSidebarOpen(false);
+      }
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const activeTabLabel = menuItems.find(item => item.id === activeTab)?.label || 'Tableau de bord';
 
@@ -57,9 +74,12 @@ export default function Dashboard() {
       />
 
       <div className="flex-1 overflow-auto">
-        <Header activeTabLabel={activeTabLabel} />
+        <Header 
+          activeTabLabel={activeTabLabel} 
+          onMenuToggle={() => setSidebarOpen(!sidebarOpen)}
+        />
         
-        <main className="p-6">
+        <main className="p-3 sm:p-4 lg:p-6">
           {renderContent()}
         </main>
       </div>
