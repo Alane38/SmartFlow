@@ -19,7 +19,9 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@backend/*": ["../backend/src/*"],
+      "@prisma/*": ["../backend/generated/prisma/*"]
     }
   },
   "include": [
